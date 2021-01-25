@@ -9,8 +9,7 @@ function Colors(props){
       onClick={(e)=>{
         console.log(color);
         props.setColor(e.target.dataset.color);
-        props.setActive(color);
-        console.log();
+        e.target.classList.toggle('active');
         }}
      
       ></li>
