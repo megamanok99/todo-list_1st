@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import TodoItem from './components/TodoItem';
 import InputTask from './components/InputTask';
 import Colors from './components/Colors';
@@ -8,10 +8,10 @@ const colors = ['grey', 'red', 'blue', 'orange', 'green'];
 function App() {
   const [color,setColor]=React.useState('grey');
   const [value,setValue]=React.useState([]);
-  const [tasks, setTasks] = React.useState([
-  ]);
+  const [tasks, setTasks] = React.useState([]);
   const [active, setActive] = React.useState('');
- 
+
+  
 function addTask(text){
 
   setTasks([...tasks,{
@@ -20,6 +20,7 @@ function addTask(text){
     color:color,
   }])
   
+  localStorage.setItem("taski", JSON.stringify(tasks));
  
 }
   function getTask(e){
@@ -28,7 +29,7 @@ function addTask(text){
       addTask(e.target.value)
       e.target.value='';
     }
-
+    localStorage.setItem("taski", JSON.stringify(tasks));
   }
   function editTask(id){
     let text=prompt();
@@ -62,7 +63,10 @@ function addTask(text){
   }
   
 
-
+  useEffect(() => {
+    const localData = localStorage.getItem("taski");
+    setTasks(JSON.parse(localData) ?? []);
+  },[]);
   
 
   return (
