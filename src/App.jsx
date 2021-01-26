@@ -13,15 +13,19 @@ function App() {
 
   
 function addTask(text){
-
-  setTasks([...tasks,{
-    id:tasks.length+1,
+  let newItem={
+    id:getLastTaskId()+1,
     text:text,
     color:color,
-  }])
+    completed:false,
+  };
+  setTasks([...tasks,newItem])
   
-  localStorage.setItem("taski", JSON.stringify(tasks));
- 
+  localStorage.setItem("taski", JSON.stringify([...tasks,newItem]));
+  console.log(localStorage)
+}
+function getLastTaskId() {
+  return tasks.length === 0 ? tasks.length : tasks[tasks.length - 1].id;
 }
   function getTask(e){
     if(e.key==='Enter' && e.target.value!==''){
@@ -29,16 +33,29 @@ function addTask(text){
       addTask(e.target.value)
       e.target.value='';
     }
-    localStorage.setItem("taski", JSON.stringify(tasks));
+    
   }
+  function completedTask(id){
+    setTasks(
+      tasks.filter((obj)=>{
+        if(obj.id===id){
+          console.log('задача выполнена');
+           obj.completed=!obj.completed;
+           
+        }
+        return obj;
+      })
+    )
+  }
+  
   function editTask(id){
     let text=prompt();
     if(text!==null){
     setTasks(
-    tasks.filter((obj,index)=>{
+    tasks.filter((obj)=>{
      
       
-      if(index+1===id && text!==''){
+      if(obj.id===id && text!==''){
         console.log('переписываем значение текста');
          obj.text=text;
          
@@ -50,16 +67,10 @@ function addTask(text){
   function removeTask(id){
     if(window.confirm('вы действительно хотите удалить?')){
       setTasks(
-        tasks.filter((obj, index) => {
-          return id !== index + 1;
+        tasks.filter((obj) => {
+          return id !== obj.id+1;
         }));
-    }
-     
-  
-    
-    
-  
-    
+    } 
   }
   
 
@@ -67,14 +78,16 @@ function addTask(text){
     const localData = localStorage.getItem("taski");
     setTasks(JSON.parse(localData) ?? []);
   },[]);
-  
+  useEffect(() => {
+    localStorage.setItem("taski", JSON.stringify(tasks));
+  }, [tasks]);
 
   return (
     <div className="App">
       <div className="todo">
         <h2>Список задач</h2>
         
-          <TodoItem  tasks={tasks}  removeTask={removeTask} editTask={editTask}  />
+          <TodoItem  tasks={tasks} completedTask={completedTask} removeTask={removeTask} editTask={editTask}  />
       
           <div className="todo-input">
         <InputTask   getTask={getTask}/>
